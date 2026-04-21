@@ -1,4 +1,5 @@
 import { clientInfo, getSSOToken } from 'https://esm.sh/@seatalk/web-app-sdk';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const debugEl = document.getElementById('debug');
   const nameInput = document.getElementById('name');
@@ -12,13 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (debugEl) {
       debugEl.textContent += msg + '\n';
     }
-  }
-
-  function getSeaTalkSDK() {
-    if (window.SeaTalkWebSDK) return window.SeaTalkWebSDK;
-    if (window.seatalkWebSDK) return window.seatalkWebSDK;
-    if (window.SeaTalkSDK) return window.SeaTalkSDK;
-    return null;
   }
 
   async function loadUserInfo() {
@@ -42,11 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     getSSOToken({
       onSuccess: async (token) => {
-        log('4. 成功取得 SSO token: ' + token);
-
-    getSSOToken({
-      onSuccess: async (token) => {
-        log('5. 成功取得 SSO token');
+        log('4. 成功取得 SSO token');
 
         try {
           const resp = await fetch(VERIFY_SSO_API, {
@@ -57,12 +47,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             body: JSON.stringify({ token }),
           });
 
-          log(`6. verify-sso 回應狀態: ${resp.status}`);
+          log(`5. verify-sso 回應狀態: ${resp.status}`);
 
           const data = await resp.json();
 
           if (data.code === 0 && data.profile) {
-            log(`7. 成功取得資料: ${data.profile.email}`);
+            log(`6. 成功取得資料: ${data.profile.email}`);
             nameInput.value = data.profile.name || '';
             emailInput.value = data.profile.email || '';
           } else {
@@ -97,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       proxy: document.getElementById('proxy').value,
     };
 
-    log('8. 開始送出請假單');
+    log('7. 開始送出請假單');
 
     try {
       const resp = await fetch(LEAVE_REQUEST_API, {
@@ -108,15 +98,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify(payload),
       });
 
-      log(`9. leave-request 回應狀態: ${resp.status}`);
+      log(`8. leave-request 回應狀態: ${resp.status}`);
 
       const data = await resp.json();
 
       if (data.code === 0) {
-        log('10. 請假單送出成功');
+        log('9. 請假單送出成功');
         alert('請假申請已送出');
         form.reset();
-        loadUserInfo();
+        loadUserInfo(); // 重新載入使用者資訊，避免 readonly 欄位被清空
       } else {
         log('❌ 請假單送出失敗');
         log(JSON.stringify(data, null, 2));
