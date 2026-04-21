@@ -1,3 +1,4 @@
+import { clientInfo, getSSOToken } from 'https://esm.sh/@seatalk/web-app-sdk';
 document.addEventListener('DOMContentLoaded', async () => {
   const debugEl = document.getElementById('debug');
   const nameInput = document.getElementById('name');
