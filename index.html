@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>請假申請表</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 16px;
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: bold;
+      }
+      input, textarea, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        box-sizing: border-box;
+      }
+      textarea {
+        min-height: 100px;
+      }
+      button {
+        margin-top: 16px;
+        cursor: pointer;
+      }
+      .readonly {
+        background: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>請假申請表</h2>
+
+    <form id="leaveForm">
+      <label>姓名</label>
+      <input type="text" id="name" class="readonly" readonly />
+
+      <label>Email</label>
+      <input type="text" id="email" class="readonly" readonly />
+
+      <label>請假類型</label>
+      <input type="text" id="leaveType" placeholder="例如：事假 / 病假 / 年假" required />
+
+      <label>開始時間</label>
+      <input type="datetime-local" id="startTime" required />
+
+      <label>結束時間</label>
+      <input type="datetime-local" id="endTime" required />
+
+      <label>原因</label>
+      <textarea id="reason" placeholder="請填寫請假原因" required></textarea>
+
+      <label>代理人</label>
+      <input type="text" id="proxy" placeholder="代理人姓名或 email" required />
+
+      <button type="submit">送出請假申請</button>
+    </form>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
