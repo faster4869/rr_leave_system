@@ -24,24 +24,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadUserInfo() {
     log('1. 開始載入使用者資訊');
 
-    const sdk = getSeaTalkSDK();
-    if (!sdk) {
-      log('❌ SeaTalk SDK 沒有載入成功');
-      alert('SeaTalk SDK 沒載入成功');
-      return;
-    }
-
-    log('2. SDK 已載入');
-
-    const { clientInfo, getSSOToken } = sdk;
-
     if (!clientInfo) {
       log('❌ clientInfo 不存在');
       alert('無法讀取 SeaTalk 環境資訊');
       return;
     }
 
-    log(`3. clientInfo.app = ${clientInfo.app}`);
+    log(`2. clientInfo.app = ${clientInfo.app}`);
 
     if (clientInfo.app !== 'SeaTalk') {
       log('❌ 這不是在 SeaTalk 內開啟');
@@ -49,7 +38,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    log('4. 開始取得 SSO token');
+    log('3. 開始取得 SSO token');
+
+    getSSOToken({
+      onSuccess: async (token) => {
+        log('4. 成功取得 SSO token: ' + token);
 
     getSSOToken({
       onSuccess: async (token) => {
