@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('page loaded');
-
+  const debugEl = document.getElementById('debug');
   const nameInput = document.getElementById('name');
   const emailInput = document.getElementById('email');
   const form = document.getElementById('leaveForm');
@@ -8,40 +7,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   const VERIFY_SSO_API = 'https://rr-leave-system.onrender.com/api/verify-sso';
   const LEAVE_REQUEST_API = 'https://rr-leave-system.onrender.com/api/leave-request';
 
+  function log(msg) {
+    if (debugEl) {
+      debugEl.textContent += msg + '\n';
+    }
+  }
+
   function getSeaTalkSDK() {
-    // 先嘗試從 window 拿
     if (window.SeaTalkWebSDK) return window.SeaTalkWebSDK;
     if (window.seatalkWebSDK) return window.seatalkWebSDK;
     if (window.SeaTalkSDK) return window.SeaTalkSDK;
-
     return null;
   }
 
   async function loadUserInfo() {
-    console.log('loadUserInfo called');
+    log('1. 開始載入使用者資訊');
 
     const sdk = getSeaTalkSDK();
-    console.log('sdk =', sdk);
-
     if (!sdk) {
+      log('❌ SeaTalk SDK 沒有載入成功');
       alert('SeaTalk SDK 沒載入成功');
       return;
     }
 
+    log('2. SDK 已載入');
+
     const { clientInfo, getSSOToken } = sdk;
 
-    console.log('clientInfo =', clientInfo);
+    if (!clientInfo) {
+      log('❌ clientInfo 不存在');
+      alert('無法讀取 SeaTalk 環境資訊');
+      return;
+    }
 
-    if (!clientInfo || clientInfo.app !== 'SeaTalk') {
+    log(`3. clientInfo.app = ${clientInfo.app}`);
+
+    if (clientInfo.app !== 'SeaTalk') {
+      log('❌ 這不是在 SeaTalk 內開啟');
       alert('請在 SeaTalk 內開啟此頁面');
       return;
     }
 
-    console.log('calling getSSOToken...');
+    log('4. 開始取得 SSO token');
 
     getSSOToken({
       onSuccess: async (token) => {
-        console.log('getSSOToken success, token =', token);
+        log('5. 成功取得 SSO token');
 
         try {
           const resp = await fetch(VERIFY_SSO_API, {
@@ -52,24 +63,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             body: JSON.stringify({ token }),
           });
 
-          console.log('verify-sso status =', resp.status);
+          log(`6. verify-sso 回應狀態: ${resp.status}`);
 
           const data = await resp.json();
-          console.log('verify-sso data =', data);
 
           if (data.code === 0 && data.profile) {
+            log(`7. 成功取得資料: ${data.profile.email}`);
             nameInput.value = data.profile.name || '';
             emailInput.value = data.profile.email || '';
           } else {
+            log('❌ verify-sso 回傳失敗');
+            log(JSON.stringify(data, null, 2));
             alert('無法取得使用者資訊');
           }
         } catch (err) {
-          console.error('verify-sso error =', err);
+          log('❌ verify-sso 呼叫失敗');
+          log(String(err));
           alert('驗證使用者失敗');
         }
       },
       onError: (err) => {
-        console.error('getSSOToken error =', err);
+        log('❌ getSSOToken 失敗');
+        log(String(err));
         alert('取得 SSO token 失敗');
       },
     });
@@ -88,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       proxy: document.getElementById('proxy').value,
     };
 
-    console.log('submit payload =', payload);
+    log('8. 開始送出請假單');
 
     try {
       const resp = await fetch(LEAVE_REQUEST_API, {
@@ -99,20 +114,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify(payload),
       });
 
-      console.log('leave-request status =', resp.status);
+      log(`9. leave-request 回應狀態: ${resp.status}`);
 
       const data = await resp.json();
-      console.log('leave-request data =', data);
 
       if (data.code === 0) {
+        log('10. 請假單送出成功');
         alert('請假申請已送出');
         form.reset();
         loadUserInfo();
       } else {
+        log('❌ 請假單送出失敗');
+        log(JSON.stringify(data, null, 2));
         alert('送出失敗');
       }
     } catch (err) {
-      console.error('leave-request error =', err);
+      log('❌ leave-request 呼叫失敗');
+      log(String(err));
       alert('送出失敗');
     }
   });
