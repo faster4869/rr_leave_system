@@ -13,7 +13,7 @@ async function loadUserInfo() {
   getSSOToken({
     onSuccess: async (token) => {
       try {
-        const resp = await fetch('/api/verify-sso', {
+        const resp = await fetch('https://rr-leave-system.onrender.com/api/verify-sso', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ form.addEventListener('submit', async (e) => {
   };
 
   try {
-    const resp = await fetch('/api/leave-request', {
+    const resp = await fetch('https://rr-leave-system.onrender.com/api/leave-request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
