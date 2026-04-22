@@ -51,6 +51,11 @@ def verify_sso():
         resp.raise_for_status()
         data = resp.json()
 
+        # 🌟 加上這段：把 SeaTalk 回傳的完整資料印到 Render 後台
+        print("=== SeaTalk SSO Verify Data ===")
+        print(json.dumps(data, indent=2, ensure_ascii=False))
+        print("===============================")
+
         return jsonify(data)
 
     except Exception as e:
