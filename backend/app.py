@@ -1,5 +1,6 @@
 import os
 import requests
+import json # 確保最上面有 import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
