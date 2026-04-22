@@ -11,6 +11,7 @@ APP_ID = os.getenv("SEATALK_APP_ID")
 APP_SECRET = os.getenv("SEATALK_APP_SECRET")
 
 
+
 def get_app_access_token():
     url = "https://openapi.seatalk.io/auth/app_access_token"
     payload = {
@@ -27,7 +28,10 @@ def get_app_access_token():
 
     return data["app_access_token"]
 
-
+@app.route('/')
+def home():
+    return "API is running! (Backend is awake)"
+    
 @app.route("/api/verify-sso", methods=["POST"])
 def verify_sso():
     try:
