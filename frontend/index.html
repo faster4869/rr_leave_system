@@ -3,66 +3,263 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>請假申請表</title>
+    <title>請假申請系統</title>
     <style>
+      /* 全域深色背景與字體 */
       body {
-        font-family: Arial, sans-serif;
-        padding: 16px;
-        max-width: 640px;
-        background: #ffffff;
-        margin: 0 auto;
+        font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f2f5; /* 略帶灰的背景 */
+        color: #333;
       }
-      label {
-        display: block;
-        margin-top: 12px;
-        font-weight: bold;
-      }
-      input, textarea, button {
+
+      /* 導覽列風格 (影片中的黃橘色) */
+      header {
+        background-color: #d99131; /* 影片中的土黃色 */
+        color: white;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
         width: 100%;
-        padding: 10px;
-        margin-top: 6px;
+        z-index: 1000;
         box-sizing: border-box;
       }
-      textarea {
-        min-height: 100px;
-      }
-      button {
-        margin-top: 16px;
+
+      /* 漢堡選單圖示 */
+      .menu-icon {
+        font-size: 24px;
+        margin-right: 16px;
         cursor: pointer;
       }
-      .readonly {
-        background: #f5f5f5;
+
+      header h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        flex-grow: 1;
+      }
+
+      /* 右側頭像初始 (影片中的 'C') */
+      .profile-initial {
+        width: 32px;
+        height: 32px;
+        background-color: #f3c27a; /* 淺橘色背景 */
+        color: #d99131; /* 深橘色字體 */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      /* 主要內容區域 (需往下移避開導覽列) */
+      main {
+        margin-top: 70px;
+        padding: 16px;
+        max-width: 680px;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+      }
+
+      /* <h2> 個人資料 / 請假申請表 */
+      h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-top: 24px;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+
+      /* 登入中 Loading 畫面 (全螢幕、居中) */
+      #loadingScreen {
+        position: fixed;
+        top: 60px; /* 導覽列下方 */
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 60px);
+        background-color: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+      }
+
+      /* Loading 旋轉動畫 (影片中的黃橘色) */
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #d99131;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 16px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      #loadingScreen p {
+        color: #d99131;
+        font-size: 16px;
+        margin: 0;
+      }
+
+      /* 個人資料卡片 (仿影片設計) */
+      .profile-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 24px;
+      }
+
+      /* 大頭貼 (影片中的櫻花圖) */
+      .profile-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 10px;
+        background-color: #eee;
+        object-fit: cover;
+      }
+
+      .profile-info {
+        flex-grow: 1;
+      }
+
+      .profile-name {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        color: #1a1a1a;
+      }
+
+      .profile-email, .profile-empid {
+        font-size: 14px;
+        color: #666;
+        margin: 2px 0;
+      }
+
+      /* 請假表單區塊 (仿影片卡片設計) */
+      .leave-form-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+      }
+
+      label {
+        display: block;
+        margin-top: 16px;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #1a1a1a;
+        font-size: 15px;
+      }
+
+      input, textarea, select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 15px;
+        background-color: #fafafa;
+        transition: border-color 0.2s;
+      }
+
+      input:focus, textarea:focus, select:focus {
+        border-color: #d99131;
+        outline: none;
+        background-color: white;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* 橘色送出按鈕 */
+      button {
+        margin-top: 28px;
+        padding: 14px;
+        width: 100%;
+        background-color: #d99131;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.2s;
+      }
+
+      button:hover {
+        background-color: #c07f2a;
       }
     </style>
   </head>
   <body>
-    <h2>請假申請表</h2>
-    <div id="debug" style="white-space: pre-wrap; background:#f5f5f5; padding:12px; margin-bottom:16px;"></div>
+    <header>
+      <div class="menu-icon">≡</div>
+      <h1>請假系統</h1>
+      <div class="profile-initial">C</div>
+    </header>
 
-    <form id="leaveForm">
-      <label>姓名</label>
-      <input type="text" id="name" class="readonly" readonly />
+    <div id="loadingScreen">
+      <div class="loader"></div>
+      <p>系統登入中，請稍後...</p>
+    </div>
 
-      <label>Email</label>
-      <input type="text" id="email" class="readonly" readonly />
+    <main id="mainContent" style="display: none;">
+      <h2>個人資料</h2>
+      
+      <div class="profile-card">
+        <img id="userAvatar" src="" alt="頭像" class="profile-avatar" />
+        <div class="profile-info">
+          <p id="userName" class="profile-name">讀取中...</p>
+          <p id="userEmail" class="profile-email"></p>
+          <p id="employeeId" class="profile-empid"></p>
+        </div>
+      </div>
 
-      <label>請假類型</label>
-      <input type="text" id="leaveType" placeholder="例如：事假 / 病假 / 年假" required />
+      <div class="leave-form-section">
+        <h2>請假申請</h2>
+        <form id="leaveForm">
+          <input type="hidden" id="name" />
+          <input type="hidden" id="email" />
 
-      <label>開始時間</label>
-      <input type="datetime-local" id="startTime" required />
+          <label>請假類型</label>
+          <input type="text" id="leaveType" placeholder="事假 / 病假 / 年假..." required />
 
-      <label>結束時間</label>
-      <input type="datetime-local" id="endTime" required />
+          <label>開始時間</label>
+          <input type="datetime-local" id="startTime" required />
 
-      <label>原因</label>
-      <textarea id="reason" placeholder="請填寫請假原因" required></textarea>
+          <label>結束時間</label>
+          <input type="datetime-local" id="endTime" required />
 
-      <label>代理人</label>
-      <input type="text" id="proxy" placeholder="代理人姓名或 email" required />
+          <label>原因</label>
+          <textarea id="reason" placeholder="請詳細說明請假原因" required></textarea>
 
-      <button type="submit">送出請假申請</button>
-    </form>
+          <label>代理人</label>
+          <input type="text" id="proxy" placeholder="代理人姓名或 email" required />
+
+          <button type="submit">送出請假申請</button>
+        </form>
+      </div>
+    </main>
 
     <script type="module" src="./app.js"></script>
   </body>
