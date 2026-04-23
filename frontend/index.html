@@ -228,23 +228,39 @@
         justify-content: space-between !important;
       }
 
-      /* 強制將標題絕對置中 */
-      .rolldate-title {
-        position: absolute !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        margin: 0 !important;
-        text-align: center !important;
-        width: 50%; /* 限制寬度，避免標題太長蓋住左右按鈕 */
-        pointer-events: none; /* 避免點擊標題時干擾到後方元素 */
-        font-weight: 600;
-        color: #333;
+      /* 🌟 終極修復 Rolldate 標題與按鈕重疊 */
+      .rolldate-header {
+        position: relative !important;
+        text-align: center !important; /* 讓裡面的標題自然置中 */
+        height: 50px !important;       /* 固定標題列高度 */
+        line-height: 50px !important;  /* 讓文字垂直居中 */
       }
-      
-      /* 確保左右按鈕維持在兩側且在最上層 */
-      .rolldate-cancel, .rolldate-confirm {
-        position: relative;
-        z-index: 10; 
+
+      /* 強制把「取消」釘在左邊 */
+      .rolldate-cancel {
+        position: absolute !important;
+        left: 16px !important;
+        top: 0 !important;
+        height: 100% !important;
+        margin: 0 !important;
+      }
+
+      /* 強制把「完成」釘在右邊 */
+      .rolldate-confirm {
+        position: absolute !important;
+        right: 16px !important;
+        top: 0 !important;
+        height: 100% !important;
+        margin: 0 !important;
+      }
+
+      /* 確保標題文字本身的樣式好看 */
+      .rolldate-title {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #333 !important;
+        margin: 0 !important;
+        display: inline-block !important;
       }
     </style>
     
