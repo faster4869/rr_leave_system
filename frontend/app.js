@@ -1,6 +1,33 @@
 import { clientInfo, getSSOToken } from 'https://esm.sh/@seatalk/web-app-sdk';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // --- 🌟 啟動 Rolldate 日期滾輪 ---
+  new Rolldate({
+    el: '#startTime',
+    format: 'YYYY-MM-DD hh:mm', // 顯示格式
+    beginYear: 2024,
+    endYear: 2030,
+    minStep: 30, // 🌟 這裡就是限制分鐘只能選 00 或 30 的關鍵！
+    lang: {
+      title: '選擇時間',
+      cancel: '取消',
+      confirm: '完成'
+    }
+  });
+
+  new Rolldate({
+    el: '#endTime',
+    format: 'YYYY-MM-DD hh:mm',
+    beginYear: 2024,
+    endYear: 2030,
+    minStep: 30, // 🌟 一樣限制 30 分鐘
+    lang: {
+      title: '選擇時間',
+      cancel: '取消',
+      confirm: '完成'
+    }
+  });
+  // --- 滾輪設定結束 ---
   // --- 抓取新版 HTML 的 DOM 元素 ---
   const loadingScreen = document.getElementById('loadingScreen');
   const mainContent = document.getElementById('mainContent');
