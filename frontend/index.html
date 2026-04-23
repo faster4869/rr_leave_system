@@ -220,6 +220,32 @@
       button:hover {
         background-color: #c07f2a;
       }
+      /* 修復 Rolldate 標題與取消按鈕重疊的問題 */
+      .rolldate-header {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      /* 強制將標題絕對置中 */
+      .rolldate-title {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        text-align: center !important;
+        width: 50%; /* 限制寬度，避免標題太長蓋住左右按鈕 */
+        pointer-events: none; /* 避免點擊標題時干擾到後方元素 */
+        font-weight: 600;
+        color: #333;
+      }
+      
+      /* 確保左右按鈕維持在兩側且在最上層 */
+      .rolldate-cancel, .rolldate-confirm {
+        position: relative;
+        z-index: 10; 
+      }
     </style>
     
     <script src="https://cdn.jsdelivr.net/npm/rolldate@3.1.3/dist/rolldate.min.js"></script>
