@@ -221,37 +221,55 @@
         background-color: #c07f2a;
       }
 
-      /* 🌟 終極修復 Rolldate 標題與按鈕重疊 */
-      .rolldate-header {
+      /* 🌟 終極修復：強制鎖定 Rolldate 的頭部標籤 */
+      .rolldate-container header {
         position: relative !important;
-        text-align: center !important; 
-        height: 50px !important;       
-        line-height: 50px !important;  
+        display: block !important;     /* 取消原本可能導致擠壓的 flex 佈局 */
+        text-align: center !important; /* 讓文字自然置中 */
+        height: 50px !important;
+        line-height: 50px !important;
+        background-color: #f8f8f8 !important; /* 稍微加個淺灰底色更好看 */
       }
 
-      .rolldate-cancel {
+      /* 強制把「取消」釘在左側牆壁 */
+      .rolldate-container header .rolldate-cancel {
         position: absolute !important;
         left: 16px !important;
         top: 0 !important;
-        height: 100% !important;
+        height: 50px !important;
+        line-height: 50px !important;
         margin: 0 !important;
+        float: none !important;
+        font-size: 16px !important;
       }
 
-      .rolldate-confirm {
+      /* 強制把「完成」釘在右側牆壁 */
+      .rolldate-container header .rolldate-confirm {
         position: absolute !important;
         right: 16px !important;
         top: 0 !important;
-        height: 100% !important;
+        height: 50px !important;
+        line-height: 50px !important;
         margin: 0 !important;
+        float: none !important;
+        font-size: 16px !important;
       }
 
-      .rolldate-title {
+      /* 確保「選擇時間」標題乖乖待在正中央 */
+      .rolldate-container header .rolldate-title {
+        display: inline-block !important;
+        position: static !important;
+        margin: 0 !important;
         font-size: 16px !important;
         font-weight: 600 !important;
         color: #333 !important;
-        margin: 0 !important;
-        display: inline-block !important;
+        line-height: 50px !important;
+        width: 100% !important; /* 佔滿整行以達到真正置中 */
+        box-sizing: border-box !important;
+        pointer-events: none !important; /* 避免點擊干擾 */
       }
+
+      
     </style>
   </head>
   <body>
