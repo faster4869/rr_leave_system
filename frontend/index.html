@@ -2,21 +2,21 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>請假申請系統</title>
     <style>
       /* 全域深色背景與字體 */
       body {
-        font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f0f2f5; /* 略帶灰的背景 */
+        background-color: #f0f2f5;
         color: #333;
       }
 
-      /* 導覽列風格 (影片中的黃橘色) */
+      /* 導覽列風格 */
       header {
-        background-color: #d99131; /* 影片中的土黃色 */
+        background-color: #d99131;
         color: white;
         padding: 12px 16px;
         display: flex;
@@ -29,7 +29,6 @@
         box-sizing: border-box;
       }
 
-      /* 漢堡選單圖示 */
       .menu-icon {
         font-size: 24px;
         margin-right: 16px;
@@ -38,17 +37,17 @@
 
       header h1 {
         margin: 0;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 500;
         flex-grow: 1;
       }
 
-      /* 右側頭像初始 (影片中的 'C') */
+      /* 右側頭像初始 */
       .profile-initial {
         width: 32px;
         height: 32px;
-        background-color: #f3c27a; /* 淺橘色背景 */
-        color: #d99131; /* 深橘色字體 */
+        background-color: #f3c27a;
+        color: #d99131;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -57,29 +56,10 @@
         font-size: 16px;
       }
 
-      /* 主要內容區域 (需往下移避開導覽列) */
-      main {
-        margin-top: 70px;
-        padding: 16px;
-        max-width: 680px;
-        margin-left: auto;
-        margin-right: auto;
-        box-sizing: border-box;
-      }
-
-      /* <h2> 個人資料 / 請假申請表 */
-      h2 {
-        font-size: 24px;
-        font-weight: 600;
-        margin-top: 24px;
-        margin-bottom: 8px;
-        color: #1a1a1a;
-      }
-
-      /* 登入中 Loading 畫面 (全螢幕、居中) */
+      /* 登入中 Loading 畫面 */
       #loadingScreen {
         position: fixed;
-        top: 60px; /* 導覽列下方 */
+        top: 60px;
         left: 0;
         width: 100%;
         height: calc(100vh - 60px);
@@ -91,13 +71,12 @@
         z-index: 999;
       }
 
-      /* Loading 旋轉動畫 (影片中的黃橘色) */
       .loader {
-        border: 4px solid #f3f3f3;
+        border: 4px solid #e0e0e0;
         border-top: 4px solid #d99131;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         animation: spin 1s linear infinite;
         margin-bottom: 16px;
       }
@@ -109,93 +88,121 @@
 
       #loadingScreen p {
         color: #d99131;
-        font-size: 16px;
+        font-size: 15px;
         margin: 0;
       }
 
-      /* 個人資料卡片 (仿影片設計) */
-      .profile-card {
-        background: white;
-        border-radius: 12px;
+      /* 主要內容區域 */
+      main {
+        margin-top: 56px;
+        max-width: 680px;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+      }
+
+      /* 區塊標題 */
+      .section-title {
+        font-size: 14px;
+        color: #888;
+        margin: 16px 16px 8px 16px;
+      }
+
+      /* 仿 iOS 清單群組 */
+      .form-group {
+        background-color: #ffffff;
+        border-top: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e5e5e5;
+        margin-bottom: 16px;
+      }
+
+      /* 單一橫列表單項目 */
+      .form-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         padding: 16px;
+        border-bottom: 1px solid #f0f0f0;
+        margin-left: 16px; /* 讓底線不要切齊左邊 */
+        padding-left: 0;
+      }
+      
+      .form-row:last-child {
+        border-bottom: none;
+      }
+
+      .form-row label {
+        font-size: 16px;
+        color: #333;
+        white-space: nowrap;
+      }
+
+      /* 右側輸入區塊 */
+      .input-wrapper {
         display: flex;
         align-items: center;
-        gap: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 24px;
-      }
-
-      /* 大頭貼 (影片中的櫻花圖) */
-      .profile-avatar {
-        width: 64px;
-        height: 64px;
-        border-radius: 10px;
-        background-color: #eee;
-        object-fit: cover;
-      }
-
-      .profile-info {
         flex-grow: 1;
+        justify-content: flex-end;
       }
 
-      .profile-name {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0 0 4px 0;
-        color: #1a1a1a;
-      }
-
-      .profile-email, .profile-empid {
-        font-size: 14px;
+      /* 隱藏原生輸入框的樣式，讓它變成純文字感 */
+      .input-wrapper input, 
+      .input-wrapper select {
+        border: none;
+        background: transparent;
+        text-align: right;
+        font-size: 16px;
         color: #666;
-        margin: 2px 0;
-      }
-
-      /* 請假表單區塊 (仿影片卡片設計) */
-      .leave-form-section {
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 30px;
-      }
-
-      label {
-        display: block;
-        margin-top: 16px;
-        margin-bottom: 6px;
-        font-weight: 500;
-        color: #1a1a1a;
-        font-size: 15px;
-      }
-
-      input, textarea, select {
         width: 100%;
-        padding: 12px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-sizing: border-box;
-        font-size: 15px;
-        background-color: #fafafa;
-        transition: border-color 0.2s;
-      }
-
-      input:focus, textarea:focus, select:focus {
-        border-color: #d99131;
         outline: none;
-        background-color: white;
+        appearance: none;
+        -webkit-appearance: none;
       }
 
+      /* 下拉選單文字靠右對齊 (手機端適用) */
+      .input-wrapper select {
+        direction: rtl; 
+      }
+
+      .input-wrapper input::placeholder {
+        color: #bbb;
+      }
+
+      /* 右側的箭頭 > */
+      .chevron {
+        color: #c7c7cc;
+        font-size: 20px;
+        margin-left: 8px;
+        line-height: 1;
+        font-family: monospace;
+      }
+
+      /* 緣由輸入框 (滿版) */
       textarea {
+        width: 100%;
+        border: none;
+        padding: 16px;
+        font-size: 16px;
+        color: #333;
+        box-sizing: border-box;
+        background-color: #ffffff;
         min-height: 120px;
-        resize: vertical;
+        resize: none;
+        outline: none;
       }
 
-      /* 橘色送出按鈕 */
+      textarea::placeholder {
+        color: #bbb;
+      }
+
+      /* 送出按鈕 */
+      .submit-container {
+        padding: 16px;
+      }
+
       button {
-        margin-top: 28px;
-        padding: 14px;
         width: 100%;
+        padding: 14px;
         background-color: #d99131;
         color: white;
         border: none;
@@ -203,7 +210,6 @@
         cursor: pointer;
         font-size: 16px;
         font-weight: 600;
-        transition: background-color 0.2s;
       }
 
       button:hover {
@@ -214,7 +220,7 @@
   <body>
     <header>
       <div class="menu-icon">≡</div>
-      <h1>請假系統</h1>
+      <h1>新建休假申請</h1>
       <div class="profile-initial">C</div>
     </header>
 
@@ -224,41 +230,70 @@
     </div>
 
     <main id="mainContent" style="display: none;">
-      <h2>個人資料</h2>
       
-      <div class="profile-card">
-        <div class="profile-info">
-          <p id="userName" class="profile-name">讀取中...</p>
-          <p id="userEmail" class="profile-email"></p>
-          <p id="employeeId" class="profile-empid"></p>
+      <form id="leaveForm">
+        <input type="hidden" id="name" />
+        <input type="hidden" id="email" />
+
+        <div class="section-title">申請資訊</div>
+        <div class="form-group">
+          
+          <div class="form-row">
+            <label>休假類型</label>
+            <div class="input-wrapper">
+              <select id="leaveType" required>
+                <option value="" disabled selected hidden>請選擇</option>
+                <option value="事假">事假</option>
+                <option value="病假">病假</option>
+                <option value="年假">年假</option>
+                <option value="婚假">婚假</option>
+                <option value="喪假">喪假</option>
+              </select>
+              <span class="chevron">›</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>開始時間</label>
+            <div class="input-wrapper">
+              <input type="datetime-local" id="startTime" required />
+              <span class="chevron">›</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>結束時間</label>
+            <div class="input-wrapper">
+              <input type="datetime-local" id="endTime" required />
+              <span class="chevron">›</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>代理人</label>
+            <div class="input-wrapper">
+              <input type="text" id="proxy" placeholder="選擇或輸入" required />
+              <span class="chevron">›</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="leave-form-section">
-        <h2>請假申請</h2>
-        <form id="leaveForm">
-          <input type="hidden" id="name" />
-          <input type="hidden" id="email" />
+        <div class="section-title">請簡述休假緣由</div>
+        <div class="form-group">
+          <textarea id="reason" placeholder="請填寫緣由" required></textarea>
+        </div>
 
-          <label>請假類型</label>
-          <input type="text" id="leaveType" placeholder="事假 / 病假 / 年假..." required />
-
-          <label>開始時間</label>
-          <input type="datetime-local" id="startTime" required />
-
-          <label>結束時間</label>
-          <input type="datetime-local" id="endTime" required />
-
-          <label>原因</label>
-          <textarea id="reason" placeholder="請詳細說明請假原因" required></textarea>
-
-          <label>代理人</label>
-          <input type="text" id="proxy" placeholder="代理人姓名或 email" required />
-
-          <button type="submit">送出請假申請</button>
-        </form>
-      </div>
+        <div class="submit-container">
+          <button type="submit">完成並送出</button>
+        </div>
+      </form>
     </main>
+
+    <div style="display: none;">
+        <span id="userName"></span>
+        <span id="userEmail"></span>
+        <span id="employeeId"></span>
+    </div>
 
     <script type="module" src="./app.js"></script>
   </body>
