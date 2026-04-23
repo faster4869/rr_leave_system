@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mainContent = document.getElementById('mainContent');
   
   // 個人資料卡片的元素
-  const userAvatar = document.getElementById('userAvatar');
   const userNameEl = document.getElementById('userName');
   const userEmailEl = document.getElementById('userEmail');
   const employeeIdEl = document.getElementById('employeeId');
@@ -58,7 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 下面這兩項（大頭貼和員工編號）需要你的後端配合回傳正確欄位。
             // 假設你的後端回傳 data.profile.avatar_url 和 data.profile.employee_id。
             // 如果後端沒這兩項，我也寫了預設值，不會崩潰。
-            userAvatar.src = data.profile.avatar_url || 'https://open.seatalk.io/media/images/robot_default.png'; 
             employeeIdEl.textContent = data.profile.employee_id ? `員工編號: ${data.profile.employee_id}` : '';
 
             // 同時填入表單的隱藏欄位，確保送出時有姓名和 Email
