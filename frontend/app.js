@@ -1,103 +1,85 @@
 import { clientInfo, getSSOToken } from 'https://esm.sh/@seatalk/web-app-sdk';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // --- 抓取新版 HTML 的 DOM 元素 ---
-  const loadingScreen = document.getElementById('loadingScreen');
-  const mainContent = document.getElementById('mainContent');
-  
-  // 個人資料卡片的元素
-  const userAvatar = document.getElementById('userAvatar');
-  const userNameEl = document.getElementById('userName');
-  const userEmailEl = document.getElementById('userEmail');
-  const employeeIdEl = document.getElementById('employeeId');
-  
+  const debugEl = document.getElementById('debug');
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
   const form = document.getElementById('leaveForm');
-  
-  // 表單中用來送出的隱藏欄位
-  const nameHiddenInput = document.getElementById('name');
-  const emailHiddenInput = document.getElementById('email');
 
   const VERIFY_SSO_API = 'https://rr-leave-system.onrender.com/api/verify-sso';
   const LEAVE_REQUEST_API = 'https://rr-leave-system.onrender.com/api/leave-request';
 
-  // --- 刪除原本的 Debug log 函式，因為我們要用正式的 UX ---
+  function log(msg) {
+    if (debugEl) {
+      debugEl.textContent += msg + '\n';
+    }
+  }
 
   async function loadUserInfo() {
-    // 🌟 Step 1: 確保 Loading 畫面是顯示的，主內容是隱藏的
-    loadingScreen.style.display = 'flex';
-    mainContent.style.display = 'none';
+    log('1. 開始載入使用者資訊');
 
-    // 檢查 SeaTalk 環境 (保留原本邏輯)
-    if (!clientInfo || clientInfo.app !== 'SeaTalk') {
-      // 在個人資料卡顯示錯誤狀態，並隱藏 Loading
-      loadingScreen.style.display = 'none';
-      mainContent.style.display = 'block';
-      userNameEl.textContent = '❌ 請在 SeaTalk 內開啟';
-      userNameEl.style.color = 'red';
+    if (!clientInfo) {
+      log('❌ clientInfo 不存在');
+      alert('無法讀取 SeaTalk 環境資訊');
       return;
     }
 
+    log(`2. clientInfo.app = ${clientInfo.app}`);
+
+    if (clientInfo.app !== 'SeaTalk') {
+      log('❌ 這不是在 SeaTalk 內開啟');
+      alert('請在 SeaTalk 內開啟此頁面');
+      return;
+    }
+
+    log('3. 開始取得 SSO token');
+
     getSSOToken({
       onSuccess: async (token) => {
+        log('4. 成功取得 SSO token');
+
         try {
           const resp = await fetch(VERIFY_SSO_API, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ token }),
           });
 
-          if (resp.status !== 200) throw new Error('驗證失敗');
+          log(`5. verify-sso 回應狀態: ${resp.status}`);
 
           const data = await resp.json();
 
           if (data.code === 0 && data.profile) {
-            // 🌟 核心修改：填入精緻個人資料卡片 (仿影片 UX)
-            userNameEl.textContent = data.profile.name || '未知使用者';
-            userEmailEl.textContent = data.profile.email || '';
-            
-            // 下面這兩項（大頭貼和員工編號）需要你的後端配合回傳正確欄位。
-            // 假設你的後端回傳 data.profile.avatar_url 和 data.profile.employee_id。
-            // 如果後端沒這兩項，我也寫了預設值，不會崩潰。
-            userAvatar.src = data.profile.avatar_url || 'https://open.seatalk.io/media/images/robot_default.png'; 
-            employeeIdEl.textContent = data.profile.employee_id ? `員工編號: ${data.profile.employee_id}` : '';
-
-            // 同時填入表單的隱藏欄位，確保送出時有姓名和 Email
-            nameHiddenInput.value = data.profile.name || '';
-            emailHiddenInput.value = data.profile.email || '';
-
-            // 🌟 Step 2: 成功後，隱藏 Loading 畫面，顯示主內容
-            loadingScreen.style.display = 'none';
-            mainContent.style.display = 'block';
-
+            log(`6. 成功取得資料: ${data.profile.email}`);
+            nameInput.value = data.profile.name || '';
+            emailInput.value = data.profile.email || '';
           } else {
-            throw new Error('資料不完全');
+            log('❌ verify-sso 回傳失敗');
+            log(JSON.stringify(data, null, 2));
+            alert('無法取得使用者資訊');
           }
         } catch (err) {
-          console.error(err);
-          loadingScreen.style.display = 'none';
-          mainContent.style.display = 'block';
-          userNameEl.textContent = '❌ 驗證使用者失敗';
-          userNameEl.style.color = 'red';
+          log('❌ verify-sso 呼叫失敗');
+          log(String(err));
+          alert('驗證使用者失敗');
         }
       },
       onError: (err) => {
-        console.error(err);
-        loadingScreen.style.display = 'none';
-        mainContent.style.display = 'block';
-        userNameEl.textContent = '❌ 取得 SSO token 失敗';
-        userNameEl.style.color = 'red';
+        log('❌ getSSOToken 失敗');
+        log(String(err));
+        alert('取得 SSO token 失敗');
       },
     });
   }
 
-  // 表單送出邏輯 (保留原本邏輯，只調整提示 UX)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const payload = {
-      // 這裡抓取隱藏欄位的值
-      name: nameHiddenInput.value,
-      email: emailHiddenInput.value,
+      name: nameInput.value,
+      email: emailInput.value,
       leaveType: document.getElementById('leaveType').value,
       startTime: document.getElementById('startTime').value,
       endTime: document.getElementById('endTime').value,
@@ -105,35 +87,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       proxy: document.getElementById('proxy').value,
     };
 
-    // 按鈕顯示「送出中...」
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.textContent;
-    submitBtn.textContent = '送出中...';
-    submitBtn.disabled = true;
+    log('7. 開始送出請假單');
 
     try {
       const resp = await fetch(LEAVE_REQUEST_API, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload),
       });
+
+      log(`8. leave-request 回應狀態: ${resp.status}`);
 
       const data = await resp.json();
 
       if (data.code === 0) {
-        alert('✅ 請假申請已成功送出！');
+        log('9. 請假單送出成功');
+        alert('請假申請已送出');
         form.reset();
-        loadUserInfo(); // 重新載入，保持 readonly 狀態
+        loadUserInfo(); // 重新載入使用者資訊，避免 readonly 欄位被清空
       } else {
-        alert('❌ 送出失敗: ' + (data.msg || '未知錯誤'));
+        log('❌ 請假單送出失敗');
+        log(JSON.stringify(data, null, 2));
+        alert('送出失敗');
       }
     } catch (err) {
-      console.error(err);
-      alert('❌ 網路錯誤，送出失敗');
-    } finally {
-      // 復原按鈕狀態
-      submitBtn.textContent = originalBtnText;
-      submitBtn.disabled = false;
+      log('❌ leave-request 呼叫失敗');
+      log(String(err));
+      alert('送出失敗');
     }
   });
 
